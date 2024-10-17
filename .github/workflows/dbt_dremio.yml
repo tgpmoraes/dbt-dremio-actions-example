@@ -1,0 +1,56 @@
+name: Run dbt Models on Dremio Cloud
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-dbt:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Step 2: Set up Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    # Step 3: Install dbt-dremio
+    - name: Install dbt-dremio
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install dbt-dremio
+
+    # Step 4: Create the profiles.yml file for Dremio Cloud
+    - name: Create profiles.yml
+      run: |
+        mkdir -p ~/.dbt/
+        echo "octoberblog:" > ~/.dbt/profiles.yml
+        echo "  target: dev" >> ~/.dbt/profiles.yml
+        echo "  outputs:" >> ~/.dbt/profiles.yml
+        echo "    dev:" >> ~/.dbt/profiles.yml
+        echo "      type: dremio" >> ~/.dbt/profiles.yml
+        echo "      cloud_host: ${{ secrets.DREMIO_HOST }}" >> ~/.dbt/profiles.yml
+        echo "      cloud_project_id: ${{ secrets.DREMIO_PROJID }}" >> ~/.dbt/profiles.yml
+        echo "      user: user@user.com" >> ~/.dbt/profiles.yml
+        echo "      use_ssl: true" >> ~/.dbt/profiles.yml
+        echo "      threads: 1" >> ~/.dbt/profiles.yml
+        echo "      dremio_space: dbtruns" >> ~/.dbt/profiles.yml
+        echo "      dremio_space_folder: oct24" >> ~/.dbt/profiles.yml
+        echo "      object_storage_source: dbtruns" >> ~/.dbt/profiles.yml
+        echo "      object_storage_path: oct24" >> ~/.dbt/profiles.yml
+        echo "      pat: ${{ secrets.DREMIO_PAT }}" >> ~/.dbt/profiles.yml
+
+
+    # Step 5: Run dbt models
+    - name: Run dbt models
+      run: |
+        source venv/bin/activate
+        cd octoberblog
+        dbt run
