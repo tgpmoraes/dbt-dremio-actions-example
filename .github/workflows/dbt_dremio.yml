@@ -52,5 +52,5 @@ jobs:
     - name: Run dbt models
       run: |
         source venv/bin/activate
-        cd my_project
+        cd my_dbt_project
         dbt run
