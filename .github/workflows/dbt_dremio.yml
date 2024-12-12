@@ -1,4 +1,4 @@
-name: Run dbt Models on Dremio Cloud
+name: Run dbt Models on Dremio Software
 
 on:
   pull_request:
@@ -31,26 +31,26 @@ jobs:
     - name: Create profiles.yml
       run: |
         mkdir -p ~/.dbt/
-        echo "octoberblog:" > ~/.dbt/profiles.yml
+        echo "dremio:" > ~/.dbt/profiles.yml
         echo "  target: dev" >> ~/.dbt/profiles.yml
         echo "  outputs:" >> ~/.dbt/profiles.yml
         echo "    dev:" >> ~/.dbt/profiles.yml
         echo "      type: dremio" >> ~/.dbt/profiles.yml
-        echo "      cloud_host: ${{ secrets.DREMIO_HOST }}" >> ~/.dbt/profiles.yml
-        echo "      cloud_project_id: ${{ secrets.DREMIO_PROJID }}" >> ~/.dbt/profiles.yml
-        echo "      user: user@user.com" >> ~/.dbt/profiles.yml
-        echo "      use_ssl: true" >> ~/.dbt/profiles.yml
+        echo "      software_host: ${{ secrets.DREMIO_HOST }}" >> ~/.dbt/profiles.yml
+        echo "      port: ${{ secrets.DREMIO_PORT }}" >> ~/.dbt/profiles.yml
+        echo "      user: ${{ secrets.DREMIO_USER }}" >> ~/.dbt/profiles.yml
+        echo "      password: ${{ secrets.DREMIO_PASSWORD }}" >> ~/.dbt/profiles.yml
+        echo "      use_ssl: false" >> ~/.dbt/profiles.yml
         echo "      threads: 1" >> ~/.dbt/profiles.yml
-        echo "      dremio_space: dbtruns" >> ~/.dbt/profiles.yml
-        echo "      dremio_space_folder: oct24" >> ~/.dbt/profiles.yml
-        echo "      object_storage_source: dbtruns" >> ~/.dbt/profiles.yml
-        echo "      object_storage_path: oct24" >> ~/.dbt/profiles.yml
-        echo "      pat: ${{ secrets.DREMIO_PAT }}" >> ~/.dbt/profiles.yml
+        echo "      dremio_space: ${{ secrets.DREMIO_SPACE }}" >> ~/.dbt/profiles.yml
+        echo "      dremio_space_folder: ${{ secrets.DREMIO_SPACE_FOLDER }}" >> ~/.dbt/profiles.yml
+        echo "      object_storage_source: ${{ secrets.DREMIO_OBJECT_STORAGE_SOURCE }}" >> ~/.dbt/profiles.yml
+        echo "      object_storage_path: ${{ secrets.DREMIO_OBJECT_STORAGE_PATH }}" >> ~/.dbt/profiles.yml
 
 
     # Step 5: Run dbt models
     - name: Run dbt models
       run: |
         source venv/bin/activate
-        cd octoberblog
+        cd my_project
         dbt run
